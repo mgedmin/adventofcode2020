@@ -79,8 +79,8 @@ x = 0
 dx = 3
 trees = 0
 for y, row in enumerate(the_map):
-    x = (x + dx) % len(row)
     if row[x] == '#':
         trees += 1
+    x = (x + dx) % len(row)
 
 print(trees)
