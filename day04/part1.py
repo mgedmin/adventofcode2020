@@ -79,6 +79,8 @@ def iter_passports(lines):
             for field in fields:
                 k, _, v = field.partition(':')
                 passport[k] = v
+    if passport:
+        yield passport
 
 
 required = {'byr', 'iyr', 'eyr', 'hgt', 'hcl', 'ecl', 'pid'}
