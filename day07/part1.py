@@ -65,14 +65,16 @@ def parse_rules(lines):
         if m is None:
             raise SyntaxError(line)
         outer, *inner = m.groups()
-        rules[outer] = inner
+        if outer in rules:
+            raise SyntaxError(f'duplicate rule: {outer}')
+        rules[outer] = [bag for bag in inner if bag]
     return rules
 
 
 def can_contain(what, outer, rules, memo=None):
     if memo is not None and outer in memo:
         return memo[outer]
-    inner = rules.get(outer, ())
+    inner = rules[outer]
     answer = what in inner or any(
         can_contain(what, bag, rules, memo) for bag in inner)
     if memo is not None:
@@ -80,13 +82,18 @@ def can_contain(what, outer, rules, memo=None):
     return answer
 
 
-with open('input' if len(sys.argv) < 2 else sys.argv[1]) as f:
-    rules = parse_rules(f)
+def main():
+    with open('input' if len(sys.argv) < 2 else sys.argv[1]) as f:
+        rules = parse_rules(f)
 
-memo = {}
-how_many = 0
-for outer in rules:
-    if can_contain('shiny gold', outer, rules, memo):
-        how_many += 1
+    memo = {}
+    how_many = 0
+    for outer in rules:
+        if can_contain('shiny gold', outer, rules, memo):
+            how_many += 1
 
-print(how_many)
+    print(how_many)
+
+
+if __name__ == "__main__":
+    main()
