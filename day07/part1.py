@@ -58,16 +58,21 @@ RULE = re.compile(
 )
 
 
+def parse_rule(line):
+    outer, _, inner = line.rstrip().partition(' bags contain ')
+    if inner == 'no other bags.':
+        return outer, []
+    return outer, [part.lstrip('0123456789 ').rstrip('bags.').strip()
+                   for part in inner.split(', ')]
+
+
 def parse_rules(lines):
     rules = {}
     for line in lines:
-        m = RULE.match(line)
-        if m is None:
-            raise SyntaxError(line)
-        outer, *inner = m.groups()
+        outer, inner = parse_rule(line)
         if outer in rules:
             raise SyntaxError(f'duplicate rule: {outer}')
-        rules[outer] = [bag for bag in inner if bag]
+        rules[outer] = inner
     return rules
 
 
