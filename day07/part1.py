@@ -49,13 +49,7 @@ How many bag colors can eventually contain at least one shiny gold bag? (The
 list of rules is quite long; make sure you get all of it.)
 """
 
-import re
 import sys
-
-
-RULE = re.compile(
-    r'(.*) bags contain (?:\d+ (.*?)(?: bags?, \d+ (.*?))*|no other) bags?\.'
-)
 
 
 def parse_rule(line):
