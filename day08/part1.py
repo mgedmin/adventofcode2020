@@ -82,7 +82,7 @@ NOP = 'nop'
 def parse_inst(line):
     inst, arg = line.split()
     assert inst in [ACC, JMP, NOP]
-    return [inst, int(arg)]
+    return (inst, int(arg))
 
 
 with open('input' if len(sys.argv) < 2 else sys.argv[1]) as fp:
