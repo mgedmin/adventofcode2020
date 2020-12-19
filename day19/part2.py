@@ -138,7 +138,7 @@ class AltRule(Rule):
             return alt_regexes[0]
         if all(len(regex) == 1 for regex in alt_regexes):
             return '[%s]' % ''.join(alt_regexes)
-        return '(%s)' % '|'.join(alt_regexes)
+        return '(?:%s)' % '|'.join(alt_regexes)
 
     def __repr__(self):
         return ' | '.join(map(repr, self.alternatives))
@@ -149,7 +149,7 @@ class OneOrMore(Rule):
         self.rule_id = rule_id
 
     def build_regexp(self, rules: Dict[int, Rule], max_length: int) -> str:
-        return '(%s)+' % rules[self.rule_id].build_regexp(rules, max_length)
+        return '(?:%s)+' % rules[self.rule_id].build_regexp(rules, max_length)
 
     def __repr__(self):
         return '(%s)+' % repr(self.rule_id)
@@ -166,8 +166,8 @@ class MatchedPairs(Rule):
         # regexp!  But we can cheat!
         left_re = rules[self.left].build_regexp(rules, max_length)
         right_re = rules[self.right].build_regexp(rules, max_length)
-        return '(%s)' % '|'.join(
-            '(%s){%d}(%s){%d}' % (left_re, n, right_re, n)
+        return '(?:%s)' % '|'.join(
+            '(?:%s){%d}(?:%s){%d}' % (left_re, n, right_re, n)
             for n in range(1, max_length // 2 + 1)
         )
 
