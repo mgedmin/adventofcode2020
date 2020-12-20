@@ -252,6 +252,7 @@ if __name__ == "__main__":
                 print(f"  {edge} [{'*' * edges[edge]}]")
 
     corner = 1
+    n_corners = 0
     for tile_id, tile in tiles.items():
         # corner tiles have two shared edges and two unique edges
         # other tiles have three or four shared edges
@@ -264,8 +265,10 @@ if __name__ == "__main__":
                 # just making sure
                 assert edges[edge] == 2
         if unique == 2:
+            n_corners += 1
             corner *= tile_id
             if '-v' in sys.argv:
                 print(f'Corner tile: {tile_id}')
 
+    assert n_corners == 4
     print(corner)
