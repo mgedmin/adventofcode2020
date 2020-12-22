@@ -242,30 +242,6 @@ def orient_top_left_corner(tile, edges):
     raise ValueError('this is not a corner tile')
 
 
-def orient_top_edge(tile, edges):
-    # Note: we need to keep the left edge on the left, so no rotations!
-    for tile in all_sides(tile, flip=flip_top_bottom):
-        if edges[tile.top] == 1:
-            return tile
-    raise ValueError('this is not an edge tile')
-
-
-def orient_top_edge_to_match(tile, top_tile):
-    # Note: we need to keep the left edge on the left, so no rotations!
-    for tile in all_sides(tile, flip=flip_top_bottom):
-        if tile.top == top_tile.bottom[::-1]:
-            return tile
-    raise ValueError(f'this tile ({tile.id}) does not match {top_tile.id}')
-
-
-def orient_left_edge(tile, edges):
-    # Note: we need to keep the top edge on the top!
-    for tile in all_sides(tile, flip=flip_left_right):
-        if edges[tile.left] == 1:
-            return tile
-    raise ValueError('this is not an edge tile')
-
-
 def find_adjacent_on_right(tile, tiles, used):
     # Note that there are two possible orientations for the adjacent tile;
     # the one this returns is arbitrary!
@@ -335,7 +311,6 @@ if __name__ == "__main__":
         if '-v' in sys.argv:
             print(f"Adjacent tile is {adjacent.id}")
 
-        adjacent = orient_top_edge(adjacent, edges)
         extend_image(image, remove_border(adjacent))
         tiled[-1].append(adjacent)
         tile = adjacent
@@ -345,7 +320,6 @@ if __name__ == "__main__":
         if '-v' in sys.argv:
             print(f"Next row starts with is {adjacent.id}")
 
-        adjacent = orient_left_edge(adjacent, edges)
         image += remove_border(adjacent)
         start = adjacent
         tiled.append([adjacent])
@@ -357,7 +331,6 @@ if __name__ == "__main__":
                 print(f"Adjacent tile is {adjacent.id}")
 
             top_tile = tiled[-2][len(tiled[-1])]
-            adjacent = orient_top_edge_to_match(adjacent, top_tile)
             extend_image(image, remove_border(adjacent))
             tiled[-1].append(adjacent)
             tile = adjacent
