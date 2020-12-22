@@ -160,6 +160,9 @@ while player1 and player2:
         player2.append(top1)
 
 
+if '-v' in sys.argv:
+    print("Player %d wins!" % (1 if player1 else 2))
+
 print(sum(
     card * pos for pos, card in enumerate(reversed(player1 or player2), 1)
 ))
