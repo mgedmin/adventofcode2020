@@ -78,7 +78,7 @@ for n in range(10_000_000):
         if now - last > 1:
             elapsed = now - start
             eta = elapsed * 10_000_000 / n
-            print(f'{n:,} ETA: {eta // 60 // 60:.0f}h'
+            print(f'{n:,} [{len(cups)}] ETA: {eta // 60 // 60:.0f}h'
                   f' {eta // 60 % 60:.0f}min {eta % 60:.0f}s')
             last = now
 
