@@ -37,17 +37,23 @@ with open("input" if len(sys.argv) < 2 else sys.argv[1]) as f:
     cups = [int(c) for c in next(f).strip()]
 
 
-max_cup = max(cups)
+orig_max_cup = max(cups)
 
-cups += range(max_cup + 1, 1_000_001)
-assert len(cups) == 1_000_000, len(cups)
+the_range = range(orig_max_cup + 1, 1_000_001)
+cups.append(the_range)
 max_cup = 1_000_000
 
 
 start = last = time.time()
 for n in range(10_000_000):
+    if isinstance(cups[0], range):
+        current = the_range.start
+        new_range = range(the_range[4], the_range.stop)
+        cups = list(the_range[:4]) + [new_range] + cups[1:]
+        the_range = new_range
     current = cups[0]
     pick_up = cups[1:4]
+    current = cups[0]
     destination = current - 1
     if destination == 0:
         if '-v' in sys.argv:
@@ -60,7 +66,10 @@ for n in range(10_000_000):
                 print(f'ROLLOVER: {n}')
             destination = max_cup
 
-    where = cups.index(destination) + 1
+    if destination == max_cup:
+        where = cups.index(the_range) + 1
+    else:
+        where = cups.index(destination) + 1
     assert where > 4
     cups = cups[4:where] + pick_up + cups[where:] + [current]
 
