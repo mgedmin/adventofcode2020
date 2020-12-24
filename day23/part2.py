@@ -33,63 +33,61 @@ import sys
 import time
 
 
+class arrangement(dict):
+    def __missing__(self, idx):
+        return idx + 1
+
+
+start = last = time.time()
+
 with open("input" if len(sys.argv) < 2 else sys.argv[1]) as f:
     cups = [int(c) for c in next(f).strip()]
 
 
+clockwise = arrangement()
+for a, b in zip(cups, cups[1:]):
+    clockwise[a] = b
+
 orig_max_cup = max(cups)
-
-the_range = range(orig_max_cup + 1, 1_000_001)
-cups.append(the_range)
+clockwise[cups[-1]] = orig_max_cup + 1
 max_cup = 1_000_000
+clockwise[max_cup] = cups[0]
 
-
-start = last = time.time()
+current = cups[0]
 for n in range(10_000_000):
-    if isinstance(cups[0], range):
-        current = the_range.start
-        # XXX: this fails after 250000 iterations:
-        # 250,000 [999974] ETA: 108h 45min 2s
-        # Traceback (most recent call last):
-        #   File "./part2.py", line 51, in <module>
-        #     new_range = range(the_range[4], the_range.stop)
-        # IndexError: range object index out of range
-        new_range = range(the_range[4], the_range.stop)
-        cups = list(the_range[:4]) + [new_range] + cups[1:]
-        the_range = new_range
-    current = cups[0]
-    pick_up = cups[1:4]
-    current = cups[0]
+    pick_up = [clockwise[current]]
+    for m in range(2):
+        pick_up.append(clockwise[pick_up[-1]])
+    assert len(pick_up) == 3
+    after = clockwise[pick_up[-1]]
+
     destination = current - 1
     if destination == 0:
-        if '-v' in sys.argv:
-            print(f'ROLLOVER: {n}')
         destination = max_cup
     while destination in pick_up:
         destination -= 1
         if destination == 0:
-            if '-v' in sys.argv:
-                print(f'ROLLOVER: {n}')
             destination = max_cup
 
-    if destination == max_cup:
-        where = cups.index(the_range) + 1
-    else:
-        where = cups.index(destination) + 1
-    assert where > 4
-    cups = cups[4:where] + pick_up + cups[where:] + [current]
+    after_dest = clockwise[destination]
+    clockwise[current] = after
+    clockwise[destination] = pick_up[0]
+    clockwise[pick_up[-1]] = after_dest
+    current = after
 
-    if n % 100 == 0 and '-v' in sys.argv:
+    if n % 1000 == 0 and '-v' in sys.argv:
         now = time.time()
         if now - last > 1:
             elapsed = now - start
-            eta = elapsed * 10_000_000 / n
-            print(f'{n:,} [{len(cups)}] ETA: {eta // 60 // 60:.0f}h'
-                  f' {eta // 60 % 60:.0f}min {eta % 60:.0f}s')
+            # The problem with this estimation is that the data structure gets
+            # slower as it gets larger.
+            eta = elapsed * 10_000_000 / n - elapsed
+            print(f'{n:,}'
+                  f' ETA: {eta // 60 % 60:.0f}min {eta % 60:.0f}s')
             last = now
 
-where = cups.index(1)
-cups = (cups[where + 1:where + 3] + cups[:2])[:2]
+cups = [clockwise[1]]
+cups.append(clockwise[cups[-1]])
 if '-v' in sys.argv:
     print(*cups)
 print(cups[0] * cups[1])
