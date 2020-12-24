@@ -48,6 +48,12 @@ start = last = time.time()
 for n in range(10_000_000):
     if isinstance(cups[0], range):
         current = the_range.start
+        # XXX: this fails after 250000 iterations:
+        # 250,000 [999974] ETA: 108h 45min 2s
+        # Traceback (most recent call last):
+        #   File "./part2.py", line 51, in <module>
+        #     new_range = range(the_range[4], the_range.stop)
+        # IndexError: range object index out of range
         new_range = range(the_range[4], the_range.stop)
         cups = list(the_range[:4]) + [new_range] + cups[1:]
         the_range = new_range
